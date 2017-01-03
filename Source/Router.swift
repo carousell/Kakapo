@@ -347,4 +347,8 @@ public final class Router {
         addRoute(with: path, method: .put, handler: handler)
     }
 
+    public func removeAllRoutes() {
+        routes.removeAll()
+    }
+
 }
