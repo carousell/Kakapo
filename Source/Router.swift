@@ -47,6 +47,8 @@ public protocol ResponseFieldsProvider: CustomSerializable {
 
     /// An optional dictionary holding the response header fields
     var headerFields: [String : String]? { get }
+
+    var error: Error? { get }
 }
 
 extension ResponseFieldsProvider {
@@ -71,7 +73,9 @@ public struct Response: ResponseFieldsProvider {
     
     /// An optional dictionary holding the response header fields
     public let headerFields: [String : String]?
-    
+
+    public let error: Error?
+
     /**
      Initialize `Response` object that wraps another `Serializable` object for the serialization but, implementing `ResponseFieldsProvider` can affect some parameters of the HTTP response
      
@@ -81,10 +85,15 @@ public struct Response: ResponseFieldsProvider {
      
      - returns: A wrapper `Serializable` object that affect http requests.
      */
-    public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    public init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil, error: Error? = nil) {
         self.statusCode = statusCode
         self.body = body
         self.headerFields = headerFields
+        self.error = error
+    }
+
+    public init(error: Error) {
+        self.init(statusCode: 0, body: [:], error: error)
     }
 }
 
@@ -198,6 +207,7 @@ public final class Router {
         var statusCode = 200
         var headerFields: [String : String]? = ["Content-Type": "application/json"]
         var serializableObject: Serializable?
+        var error: Error?
         
         for (key, handler) in routes where key.method.rawValue == server.request.httpMethod {
             if let info = matchRoute(baseURL, path: key.path, requestURL: requestURL) {
@@ -214,13 +224,16 @@ public final class Router {
         if let serializableObject = serializableObject as? ResponseFieldsProvider {
             statusCode = serializableObject.statusCode
             headerFields = serializableObject.headerFields
+            error = serializableObject.error
         }
         
         if let response = HTTPURLResponse(url: requestURL, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: headerFields) {
             client.urlProtocol(server, didReceive: response, cacheStoragePolicy: .allowedInMemoryOnly)
         }
-        
-        if let data = serializableObject?.toData() {
+
+        if let error = error {
+            client.urlProtocol(server, didFailWithError: error)
+        } else if let data = serializableObject?.toData() {
             client.urlProtocol(server, didLoad: data)
         }
         
