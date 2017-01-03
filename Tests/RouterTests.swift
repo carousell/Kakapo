@@ -17,11 +17,13 @@ struct CustomResponse: ResponseFieldsProvider {
     let statusCode: Int
     let body: Serializable
     let headerFields: [String : String]?
+    let error: Error?
     
-    init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil) {
+    init(statusCode: Int, body: Serializable, headerFields: [String : String]? = nil, error: Error? = nil) {
         self.statusCode = statusCode
         self.body = body
         self.headerFields = headerFields
+        self.error = error
     }
 }
 
@@ -656,6 +658,21 @@ class RouterTests: QuickSpec {
                 }.resume()
                 
                 expect(called).toEventually(beTrue())
+            }
+
+            it("should return the specified error inside a response object when requesting a registered url") {
+                router.get("/users/:id") { request in
+                    return Response(error: NSError(domain: URLError.errorDomain,
+                                                   code: URLError.cannotFindHost.rawValue,
+                                                   userInfo: nil))
+                }
+
+                var responseError: Error?
+                URLSession.shared.dataTask(with: URL(string: "http://www.test.com/users/2")!) { (_, _, error) in
+                    responseError = error
+                    }.resume()
+                
+                expect((responseError as? NSError)?.code).toEventually(equal(URLError.cannotFindHost.rawValue))
             }
         }
         
