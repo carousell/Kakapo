@@ -27,6 +27,7 @@ struct CustomResponse: ResponseFieldsProvider {
     }
 }
 
+// swiftlint:disable type_body_length
 class RouterTests: QuickSpec {
     
     override func spec() {
@@ -948,3 +949,4 @@ class RouterTests: QuickSpec {
         }
     }
 }
+// swiftlint:enable type_body_length
