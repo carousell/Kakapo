@@ -18,10 +18,10 @@ matrix:
     - env: DESTINATION="OS=12.2,name=Apple TV 4K (at 1080p)" SCHEME=tvOS SDK="appletvsimulator12.2"
     - env: DESTINATION="OS=12.2,name=iPhone X" SCHEME=iOS SDK="iphonesimulator12.2" COVERAGE=YES
       before_install:
-        - bundle exec gem install danger --no-ri --no-doc
-        - bundle exec gem install danger-swiftlint --no-ri --no-doc
+        - gem install danger
+        - gem install danger-swiftlint
       before_script:
-        - bundle exec danger
+        - danger
         - pod lib lint --quick
       after_success:
         - bash <(curl -s https://codecov.io/bash) -J 'Kakapo'
