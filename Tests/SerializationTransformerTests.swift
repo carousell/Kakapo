@@ -26,9 +26,8 @@ struct LowercaseFirstCharacterTransformer<Wrapped: Serializable>: SerializationT
     let wrapped: Wrapped
     
     func transform(key: String) -> String {
-        let characters = key.characters
-        let first = String(characters.prefix(1)).lowercased()
-        let other = String(characters.dropFirst())
+        let first = key.prefix(1).lowercased()
+        let other = String(key.dropFirst())
         return first + other
     }
 }
