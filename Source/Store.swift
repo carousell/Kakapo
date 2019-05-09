@@ -125,7 +125,7 @@ public final class Store {
         }
         
         let object = handler(id)
-            
+
         precondition(object.id == id, "Tried to insert an invalid id")
         barrierAsync {
             self.lookup(T.self).value.append(object)
