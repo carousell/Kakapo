@@ -166,7 +166,7 @@ class StoreTests: QuickSpec {
                         return User(firstName: "Joan", lastName: "Romano", age: 25, id: String(Int(id)! - 1))
                     }
                 }
-                
+
                 expect(preconditionTrigger()).to(throwAssertion())
             }
             #endif

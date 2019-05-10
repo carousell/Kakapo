@@ -1,22 +1,22 @@
 use_frameworks!
 
 def testing_pods
-    pod 'Quick', '~> 1.0'
-    pod 'Nimble', '~> 5.0'
-    pod 'SwiftyJSON', '~> 3.0'
+    pod 'Quick', '~> 2.0'
+    pod 'Nimble', '~> 8.0'
+    pod 'SwiftyJSON', '~> 5.0'
 end
 
 target 'Kakapo iOSTests' do
-    platform :ios, '9.0'
+    platform :ios, '10.0'
     testing_pods
 end
 
 target 'Kakapo tvOSTests' do
-    platform :tvos, '9.2'
+    platform :tvos, '11.0'
     testing_pods
 end
 
 target 'Kakapo macOSTests' do
-    platform :osx, '10.11'
+    platform :osx, '10.12'
     testing_pods
 end
